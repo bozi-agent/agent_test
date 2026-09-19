@@ -3,14 +3,12 @@
  *
  * 跑法：
  *   node test/smoke.mjs
- *   node test/smoke.mjs "C:\某个\真实的报表.xlsx"     # 顺带验证 xlsx 解析
  *
  * 验证内容：
  *  1) 存储层读写（设置 / 选题库 / 抓取缓存 / 状态）
  *  2) 列表页解析（配置选择器 / article 降级 / 兜底扫描）+ 日期识别
- *  3) 复盘引擎（指标 / 爆款判定 / 伪爆文剔除 / 改词建议）
- *  4) 提示词硬规则（违禁词扫描 / 检查清单打勾 / 去 AI 味）
- *  5) Excel/CSV 解析
+ *  3) 提示词硬规则（违禁词扫描 / 检查清单打勾 / 去 AI 味）
+ *  4) 本地筛选与本地生成（不调大模型）
  */
 
 import fs from 'node:fs'
@@ -26,7 +24,6 @@ const { parseList, detectDate, normalizeDate, cleanTitle, resolveUrl, decodeEnti
 const { judgeCopy, scanBanned, highlightFacts, countChecks, ensureAiLabel, deAiTells, runComplianceCheck } = await import('../lib/rules.js')
 const { selectCandidates, judgeItem } = await import('../lib/filter.js')
 const { generateCopies, generateLayouts, buildTitles, buildTags, extractEntities, splitSentences } = await import('../lib/generate.js')
-const { parseCsv, rowsToReviewData, parseReport } = await import('../lib/xlsx.js')
 
 let pass = 0
 let fail = 0
@@ -321,37 +318,6 @@ section('5) 本地筛选与本地生成（不调大模型）')
   check('小工具：抽实体', extractEntities('OpenAI 发布了 GPT-5.2，免费额度 20 美元').length >= 2, JSON.stringify(extractEntities('OpenAI 发布了 GPT-5.2，免费额度 20 美元')))
   check('小工具：标题候选里有原文实体', buildTitles(picked.candidates[0]).titles.some((title) => /\d|OpenAI|GPT/.test(title)))
   check('小工具：标签带账号定位', buildTags(picked.candidates[0], settings).includes(String(settings.accountPositioning).replace(/\s+/g, '')))
-}
-
-// ---------------------------------------------------------------------------
-section('6) 报表解析')
-{
-  const csv = '笔记标题,阅读量,点赞量,收藏量,评论量,分享量,新增关注,有效评论数,发布时间\nOpenAI 发布 GPT-5.2,1.2万,900,450,120,60,40,90,2026-09-10\n某个开源工具,3200,80,60,12,5,3,8,2026-09-12'
-  const rows = parseCsv(csv)
-  check('CSV 解析出行数', rows.length === 3, String(rows.length))
-  const data = rowsToReviewData(rows)
-  check('表头映射到内部字段', data.mapping.some((m) => m.field === 'reads') && data.mapping.some((m) => m.field === 'title'))
-  check('"1.2万"换算成 12000', data.notes[0].reads === 12000, String(data.notes[0].reads))
-  check('笔记条数正确', data.notes.length === 2)
-
-  const csvPath = path.join(TEMP_HOME, 'report.csv')
-  fs.writeFileSync(csvPath, `\uFEFF${csv}`, 'utf8')
-  const parsed = await parseReport(csvPath)
-  check('parseReport 能读 CSV 文件（含 BOM）', parsed.ok === true && parsed.data.notes.length === 2, JSON.stringify(parsed.error || ''))
-
-  const xlsxPath = process.argv[2]
-  if (xlsxPath) {
-    const result = await parseReport(xlsxPath)
-    check(`parseReport 能读真实 xlsx（${path.basename(xlsxPath)}）`, result.ok === true, result.error || '')
-    if (result.ok) console.log(`     解析方式：${result.method}；笔记数：${result.data.notes.length}`)
-  } else {
-    console.log('  - 跳过真实 xlsx 测试（想看就把 xlsx 路径当第一个参数传进来）')
-  }
-
-  const missing = await parseReport(path.join(TEMP_HOME, '不存在.xlsx'))
-  check('文件不存在时给友好提示', missing.ok === false && /找不到文件/.test(missing.error))
-  const wrong = await parseReport(path.join(TEMP_HOME, 'report.txt.bak'))
-  check('不支持的类型给提示', wrong.ok === false)
 }
 
 // ---------------------------------------------------------------------------

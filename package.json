@@ -32,8 +32,7 @@
     "test:style": "node test/style.mjs",
     "test:bundle": "node test/bundle-check.mjs",
     "test:combo": "node test/combo-check.mjs",
-    "test:e2e": "node test/e2e-boot.mjs",
-    "sample:xlsx": "node test/make-sample-xlsx.mjs"
+    "test:e2e": "node test/e2e-boot.mjs"
   },
   "dsh": {
     "engines": {

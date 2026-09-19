@@ -185,7 +185,6 @@ npm test
 | `npm run test:style` | 样式表注入 |
 | `npm run test:bundle` | 打包格式（必须能被浏览器 `__ModuleLoader__` 注册） |
 | `npm run test:combo` / `npm run test:e2e` | 按浏览器真实加载顺序整体跑一遍，抓 `Failed to load plugins` |
-| `npm run sample:xlsx` | 生成一份示例报表，验证 xlsx 解析器 |
 
 环境变量（都能不填）：
 
