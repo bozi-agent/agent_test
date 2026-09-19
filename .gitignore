@@ -1,0 +1,76 @@
+# ============================================================================
+# dsh-ai-news-workbench —— 开源发布用 .gitignore
+# 目的：**绝不把本地隐私、运行数据、个人素材推到 GitHub**
+# ============================================================================
+
+# ---------- 依赖 ----------
+node_modules/
+.pnpm-store/
+.yarn/
+
+# ---------- 运行数据 ----------
+# 插件真正写数据的地方是 ~/.dsh/ai-news-workbench/（在项目外，本来就不会被提交）。
+# 这里一并忽略，是防止有人把数据目录建在项目里、或者手动拷了一份进来。
+ai-news-workbench/
+settings.json
+topic-library.json
+fetch-cache.json
+drafts.json
+review-data.json
+status.json
+fetch-log.txt
+*.local.json
+
+# ---------- 个人素材：封面模板图 ----------
+# ⚠ assets/templates/ 是**用户自己放封面模板图的文件夹**，里面通常是个人照片/图片，
+#   绝对不能进开源仓库。目录本身用 .gitkeep 占位（插件首次运行也会自动创建）。
+assets/templates/*
+!assets/templates/.gitkeep
+
+# 导出/生成的数据文件（报表、报告）
+*.xlsx
+report*.json
+*.local.*
+
+# ---------- 日志与临时文件 ----------
+*.log
+logs/
+tmp/
+temp/
+.cache/
+*.tmp
+*.bak
+*.orig
+*~
+
+# ---------- 系统文件 ----------
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# ---------- 编辑器 / IDE ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*.code-workspace
+
+# ---------- 密钥与环境变量 ----------
+# 说明：本插件的 API Key 是**用户在界面里填、存在 ~/.dsh/ai-news-workbench/settings.json**，
+#       代码里没有任何硬编码密钥。这几条是万一以后加了 .env 之类的兜底。
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ============================================================================
+# 下面这些**故意不忽略**（要提交进仓库）：
+#   lib/client-dist/client.js  —— 打包产物，但插件运行时直接加载它。
+#                                 提交进去，别人 clone 完不用先 build 就能装。
+#                                 改了 lib/client/ 记得跑 `npm run build` 再提交。
+# ============================================================================

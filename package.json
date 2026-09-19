@@ -1,0 +1,65 @@
+{
+  "name": "dsh-ai-news-workbench",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI 资讯工作台 —— DSH 侧边栏插件：找选题 → 抓取 → 筛选核实 → 写文案 → 做图排版 → 发布互动 → 数据复盘",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": "./lib/client-dist/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "assets",
+    "build",
+    "test",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node build/build-client.mjs",
+    "test": "node build/build-client.mjs && node test/smoke.mjs && node test/integration.mjs && node test/store.mjs && node test/sidebar-entry.mjs && node test/ui.mjs && node test/style.mjs && node test/bundle-check.mjs && node test/combo-check.mjs && node test/e2e-boot.mjs",
+    "test:host": "node test/smoke.mjs",
+    "test:api": "node test/integration.mjs",
+    "test:store": "node test/store.mjs",
+    "test:sidebar": "node test/sidebar-entry.mjs",
+    "test:ui": "node test/ui.mjs",
+    "test:style": "node test/style.mjs",
+    "test:bundle": "node test/bundle-check.mjs",
+    "test:combo": "node test/combo-check.mjs",
+    "test:e2e": "node test/e2e-boot.mjs",
+    "sample:xlsx": "node test/make-sample-xlsx.mjs"
+  },
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.1.5-rc.1"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "slots"
+      ],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.0",
+    "react": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "license": "MIT"
+}
