@@ -1,4 +1,4 @@
-# AI 资讯工作台（dsh-ai-news-workbench）
+# dsh-ai-news-workbench
 
 一个给 **DSH（DeepSeek Harness）** 用的侧边栏插件：点一下弹出全屏工作台，把「找选题 → 抓资讯 → 筛核实 → 写文案 → 做封面」这条做号流水线变成**一串按钮**，面向不想写代码的操作者。
 
